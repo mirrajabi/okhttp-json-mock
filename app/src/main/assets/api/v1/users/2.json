@@ -1,0 +1,12 @@
+{
+  "status": 200,
+  "response": {
+    "id": 1,
+    "name": "Jane",
+    "lastName": "Doe",
+    "age": 22,
+    "phoneNumbers": [
+      "1532131512"
+    ]
+  }
+}
