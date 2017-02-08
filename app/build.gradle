@@ -42,4 +42,5 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
     apt 'com.jakewharton:butterknife-compiler:8.4.0'
     compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.7.0'
+    compile 'com.github.mirrajabi:okhttp-json-mock:afc5549eab'
 }
