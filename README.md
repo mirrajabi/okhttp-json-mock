@@ -2,10 +2,10 @@
 [![](https://jitpack.io/v/mirrajabi/okhttp-json-mock.svg?style=flat-square)](https://jitpack.io/#mirrajabi/okhttp-json-mock)
 
 This simple library helps you mock your data for using with okhttp+retrofit in json format in just a few moves.
-it routes the requests to local json files and returns the data stored in them.
+it forwards the requests to local json files and returns the data stored in them.
 ### Usage
 First add jitpack to your projects build.gradle file
-```
+```groovy
 allprojects {
    	repositories {
    		...
@@ -14,7 +14,7 @@ allprojects {
 }
 ```
 Then add the dependency in modules build.gradle file
-```
+```groovy
 dependencies {
     compile 'com.github.mirrajabi:okhttp-json-mock:1.0'
  }
@@ -131,7 +131,7 @@ in this case the `items` object in `response` is the array that will be returned
 }
 ```
 ### Retrofit's annotations
-Currently @Query and @Path can be achieved simply with correct folder and file namings (like website routes)
+Currently [@Query](https://square.github.io/retrofit/2.x/retrofit/retrofit2/http/Query.html) and [@Path](https://square.github.io/retrofit/2.x/retrofit/retrofit2/http/Path.html) can be achieved simply with correct folder and file namings (like website routes)
 for example if you have a request like
 ```java
 @GET("api/v1/posts/{userId}")
