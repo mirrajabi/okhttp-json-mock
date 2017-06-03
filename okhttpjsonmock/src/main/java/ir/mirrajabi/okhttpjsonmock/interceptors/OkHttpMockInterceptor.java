@@ -23,18 +23,32 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 public class OkHttpMockInterceptor implements Interceptor {
+    public final static String DEFAULT_BASE_PATH = "";
+    public final static int DELAY_DEFAULT_MIN = 500;
+    public final static int DELAY_DEFAULT_MAX = 1500;
     private Context mContext;
     private int mFailurePercentage;
     private String mBasePath;
+    private int mMinDelayMilliseconds;
+    private int mMaxDelayMilliseconds;
 
     public OkHttpMockInterceptor(Context context, int failurePercentage) {
-        this(context, failurePercentage, "");
+        this(context, failurePercentage, DEFAULT_BASE_PATH,
+                DELAY_DEFAULT_MIN, DELAY_DEFAULT_MAX);
+    }
+    public OkHttpMockInterceptor(Context context, int failurePercentage,
+                                 int minDelayMilliseconds, int maxDelayMilliseconds) {
+        this(context, failurePercentage, DEFAULT_BASE_PATH,
+                minDelayMilliseconds, maxDelayMilliseconds);
     }
 
-    public OkHttpMockInterceptor(Context context, int failurePercentage, String basePath) {
+    public OkHttpMockInterceptor(Context context, int failurePercentage, String basePath,
+                                 int minDelayMilliseconds, int maxDelayMilliseconds) {
         mContext = context;
         mFailurePercentage = failurePercentage;
         mBasePath = basePath;
+        mMinDelayMilliseconds = minDelayMilliseconds;
+        mMaxDelayMilliseconds = maxDelayMilliseconds;
     }
 
     @Override
@@ -65,11 +79,12 @@ public class OkHttpMockInterceptor implements Interceptor {
         JsonObject jsonObject = gson.toJsonTree(mockedResponse.getResponse()).getAsJsonObject();
         String result = jsonObject.toString();
         JsonArray items = jsonObject.getAsJsonArray("items");
-        if (items != null) {
+        if (items != null)
             result = gson.toJson(items);
-        }
         try {
-            Thread.sleep(Math.abs(new Random().nextInt() % 1500) + 500);
+            Thread.sleep(Math.abs(new Random()
+                    .nextInt() % (mMaxDelayMilliseconds - mMinDelayMilliseconds))
+                    + mMinDelayMilliseconds);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

@@ -27,7 +27,7 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile project(':okhttpjsonmock')
+    compile 'com.github.mirrajabi:okhttp-json-mock:1.0'
     compile 'com.android.support:appcompat-v7:25.1.1'
     compile 'com.android.support:recyclerview-v7:25.1.1'
     compile 'com.android.support:support-annotations:25.1.1'
@@ -42,5 +42,4 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
     apt 'com.jakewharton:butterknife-compiler:8.4.0'
     compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.7.0'
-    compile 'com.github.mirrajabi:okhttp-json-mock:afc5549eab'
 }

@@ -9,7 +9,7 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface UsersService {
-    public static final String API_VERSION = "api/v1";
+    String API_VERSION = "api/v1";
 
     //usage example /users/page=phoneNumbers.json
     @GET(API_VERSION + "/users")
