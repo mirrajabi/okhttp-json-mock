@@ -37,7 +37,15 @@ mRetrofit = new Retrofit.Builder()
 Constructors
 ```java
 OkHttpMockInterceptor(Context context, int failurePercentage)
-OkHttpMockInterceptor(Context context, int failurePercentage, String basePath)
+OkHttpMockInterceptor(Context context,
+                      int failurePercentage,
+                      int minDelayMilliseconds,
+                      int maxDelayMilliseconds)
+OkHttpMockInterceptor(Context context,
+                      int failurePercentage,
+                      String basePath,
+                      int minDelayMilliseconds,
+                      int maxDelayMilliseconds)
 ```
 #### 2. Prepare your api service interfaces for retrofit []()
 ```java
@@ -149,3 +157,6 @@ You can take a look at [Sample app](https://github.com/mirrajabi/okhttp-json-moc
 ### Contributions
 Any contributions are welcome. 
 just fork it and submit your changes to your fork and then create a pull request
+
+### Changelog
+1.1 - `Adds delay customization option.`
