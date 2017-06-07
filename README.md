@@ -1,11 +1,12 @@
 # okhttp-json-mock
 [![](https://jitpack.io/v/mirrajabi/okhttp-json-mock.svg?style=flat-square)](https://jitpack.io/#mirrajabi/okhttp-json-mock)
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Okhttp%20Json%20Mock-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/5239)
 
 This simple library helps you mock your data for using with okhttp+retrofit in json format in just a few moves.
-it routes the requests to local json files and returns the data stored in them.
-###Usage
+it forwards the requests to local json files and returns the data stored in them.
+### Usage
 First add jitpack to your projects build.gradle file
-```
+```groovy
 allprojects {
    	repositories {
    		...
@@ -14,13 +15,13 @@ allprojects {
 }
 ```
 Then add the dependency in modules build.gradle file
-```
+```groovy
 dependencies {
     compile 'com.github.mirrajabi:okhttp-json-mock:1.0'
  }
 ```
 
-####1. Add OkhttpMockInterceptor to your OkhttpClient instance and attach it to yout retrofit instance
+#### 1. Add OkhttpMockInterceptor to your OkhttpClient instance and attach it to yout retrofit instance
 ```java
 OkHttpClient mOkHttpClient = new OkHttpClient.Builder()
     .addInterceptor(new OkHttpMockInterceptor(this, 5))
@@ -38,7 +39,7 @@ Constructors
 OkHttpMockInterceptor(Context context, int failurePercentage)
 OkHttpMockInterceptor(Context context, int failurePercentage, String basePath)
 ```
-####2. Prepare your api service interfaces for retrofit []()
+#### 2. Prepare your api service interfaces for retrofit []()
 ```java
 //usage example /users/page=phoneNumbers.json
 @GET(API_VERSION + "/users")
@@ -57,7 +58,7 @@ Observable<UserModel> getUser(@Path("userId") int userId);
 @GET(API_VERSION + "/users/{userId}/phoneNumbers")
 Observable<ArrayList<String>> getUserNumbers(@Path("userId") int userId);
 ```
-####3. Put your json models in assets folder like the [examples](https://github.com/mirrajabi/okhttp-json-mock/tree/master/app/src/main/assets)
+#### 3. Put your json models in assets folder like the [examples](https://github.com/mirrajabi/okhttp-json-mock/tree/master/app/src/main/assets)
 ```
 \---api
     \---v1
@@ -76,11 +77,11 @@ Observable<ArrayList<String>> getUserNumbers(@Path("userId") int userId);
             \---3
                     phoneNumbers.json
 ```
-##Notes
-###JSON Response models
+## Notes
+### JSON Response models
 The base response model is [_MockedResponse.java_](https://github.com/mirrajabi/okhttp-json-mock/blob/master/okhttpjsonmock/src/main/java/ir/mirrajabi/okhttpjsonmock/models/MockedResponse.java)
 so the json response should look like the ones below :
-#####1. Response is a single object(not an array)
+##### 1. Response is a single object(not an array)
 ```json
 {
   "status": 200,
@@ -99,7 +100,7 @@ so the json response should look like the ones below :
 ```
 where `response` object is the result that the interceptor will return
 
-#####2. Response is a list of objects(e.g. an arraylist)
+##### 2. Response is a list of objects(e.g. an arraylist)
 in this case the `items` object in `response` is the array that will be returned.
 ```json
 {
@@ -130,8 +131,8 @@ in this case the `items` object in `response` is the array that will be returned
   }
 }
 ```
-###Retrofit's annotations
-Currently @Query and @Path can be achieved simply with correct folder and file namings (like website routes)
+### Retrofit's annotations
+Currently [@Query](https://square.github.io/retrofit/2.x/retrofit/retrofit2/http/Query.html) and [@Path](https://square.github.io/retrofit/2.x/retrofit/retrofit2/http/Path.html) can be achieved simply with correct folder and file namings (like website routes)
 for example if you have a request like
 ```java
 @GET("api/v1/posts/{userId}")
@@ -145,6 +146,6 @@ so multiple queries are achievable by seperating them using **Ampersand(&)** cha
 
 You can take a look at [Sample app](https://github.com/mirrajabi/okhttp-json-mock/tree/master/app) for a working example
 
-###Contributions
+### Contributions
 Any contributions are welcome. 
 just fork it and submit your changes to your fork and then create a pull request
