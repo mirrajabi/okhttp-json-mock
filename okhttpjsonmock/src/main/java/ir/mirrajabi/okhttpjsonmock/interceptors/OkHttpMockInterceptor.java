@@ -36,6 +36,7 @@ public class OkHttpMockInterceptor implements Interceptor {
         this(context, failurePercentage, DEFAULT_BASE_PATH,
                 DELAY_DEFAULT_MIN, DELAY_DEFAULT_MAX);
     }
+
     public OkHttpMockInterceptor(Context context, int failurePercentage,
                                  int minDelayMilliseconds, int maxDelayMilliseconds) {
         this(context, failurePercentage, DEFAULT_BASE_PATH,
@@ -105,5 +106,41 @@ public class OkHttpMockInterceptor implements Interceptor {
                 .body(ResponseBody.create(MediaType.parse("application/json"), result))
                 .addHeader("content-type", "application/json")
                 .build();
+    }
+
+    public int getFailurePercentage() {
+        return mFailurePercentage;
+    }
+
+    public OkHttpMockInterceptor setFailurePercentage(int failurePercentage) {
+        mFailurePercentage = failurePercentage;
+        return this;
+    }
+
+    public String getBasePath() {
+        return mBasePath;
+    }
+
+    public OkHttpMockInterceptor setBasePath(String basePath) {
+        mBasePath = basePath;
+        return this;
+    }
+
+    public int getMinDelayMilliseconds() {
+        return mMinDelayMilliseconds;
+    }
+
+    public OkHttpMockInterceptor setMinDelayMilliseconds(int minDelayMilliseconds) {
+        mMinDelayMilliseconds = minDelayMilliseconds;
+        return this;
+    }
+
+    public int getMaxDelayMilliseconds() {
+        return mMaxDelayMilliseconds;
+    }
+
+    public OkHttpMockInterceptor setMaxDelayMilliseconds(int maxDelayMilliseconds) {
+        mMaxDelayMilliseconds = maxDelayMilliseconds;
+        return this;
     }
 }
