@@ -155,8 +155,11 @@ so multiple queries are achievable by seperating them using **Ampersand(&)** cha
 You can take a look at [Sample app](https://github.com/mirrajabi/okhttp-json-mock/tree/master/app) for a working example
 
 ### Contributions
+
 Any contributions are welcome. 
 just fork it and submit your changes to your fork and then create a pull request
 
 ### Changelog
+
+1.1.1 - `Fixes file name lowercase issue`
 1.1 - `Adds delay customization option.`
