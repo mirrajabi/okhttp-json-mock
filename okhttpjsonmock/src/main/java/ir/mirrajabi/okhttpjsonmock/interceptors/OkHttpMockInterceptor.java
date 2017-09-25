@@ -62,10 +62,10 @@ public class OkHttpMockInterceptor implements Interceptor {
             sym = "/";
         String path = url.encodedPath() + sym + query;
         String responseString = ResourcesHelper.loadAssetTextAsString(mContext,
-                mBasePath + path.substring(1).toLowerCase() + ".json");
+                mBasePath + path.substring(1) + ".json");
         if (responseString == null)
             responseString = ResourcesHelper.loadAssetTextAsString(mContext,
-                    mBasePath + url.encodedPath().substring(1).toLowerCase() + ".json");
+                    mBasePath + url.encodedPath().substring(1) + ".json");
         MockedResponse mockedResponse = new MockedResponse()
                 .setResponse(new LinkedTreeMap())
                 .setStatusCode(404);
