@@ -17,7 +17,7 @@ allprojects {
 Then add the dependency in modules build.gradle file
 ```groovy
 dependencies {
-    compile 'com.github.mirrajabi:okhttp-json-mock:1.0'
+    compile 'com.github.mirrajabi:okhttp-json-mock:1.1.1'
  }
 ```
 
