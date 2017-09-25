@@ -162,4 +162,5 @@ just fork it and submit your changes to your fork and then create a pull request
 ### Changelog
 
 1.1.1 - `Fixes file name lowercase issue`
+
 1.1 - `Adds delay customization option.`
