@@ -4,18 +4,18 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import ir.mirrajabi.okhttpjsonmock.OkHttpMockInterceptor;
 import ir.mirrajabi.okhttpjsonmock.providers.InputStreamProvider;
@@ -26,13 +26,14 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
-    @BindView(R.id.recyclerview)
-    RecyclerView mRecyclerView;
-    private Retrofit mRetrofit;
-    private OkHttpClient mOkHttpClient;
-    private UsersService mUsersService;
+    private static final String BASE_URL = "http://example.com";
 
-    private BaseQuickAdapter<UserModel, BaseViewHolder> mUsersAdapter;
+    @BindView(R.id.recyclerview)
+    RecyclerView recyclerView;
+
+    private BaseQuickAdapter<UserModel, BaseViewHolder> usersAdapter = new UsersAdapter();
+    private UsersService usersService;
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,10 +42,48 @@ public class MainActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
         initializeComponents();
+
+        requestUsers();
+    }
+
+    @Override
+    protected void onDestroy() {
+        compositeDisposable.clear();
+        compositeDisposable.dispose();
+        super.onDestroy();
     }
 
     private void initializeComponents() {
-        InputStreamProvider androidInputStreamProvider = path -> {
+        usersService = constructService();
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(this,
+                LinearLayoutManager.VERTICAL, false));
+        recyclerView.setAdapter(usersAdapter);
+    }
+
+    private UsersService constructService() {
+        OkHttpClient okHttpClient = constructClient();
+        Retrofit retrofit = constructRetrofit(okHttpClient);
+        return retrofit.create(UsersService.class);
+    }
+
+    private Retrofit constructRetrofit(OkHttpClient okHttpClient) {
+        return new Retrofit.Builder()
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .baseUrl(BASE_URL)
+                .client(okHttpClient)
+                .build();
+    }
+
+    private OkHttpClient constructClient() {
+        return new OkHttpClient.Builder()
+                .addInterceptor(new OkHttpMockInterceptor(getAndroidProvider(), 5))
+                .build();
+    }
+
+    private InputStreamProvider getAndroidProvider() {
+        return path -> {
             try {
                 return getAssets().open(path);
             } catch (IOException e) {
@@ -52,44 +91,15 @@ public class MainActivity extends AppCompatActivity {
             }
             return null;
         };
-        mOkHttpClient = new OkHttpClient.Builder()
-                .addInterceptor(new OkHttpMockInterceptor(androidInputStreamProvider, 5))
-                .build();
-        mRetrofit = new Retrofit.Builder()
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .baseUrl("http://example.com")
-                .client(mOkHttpClient)
-                .build();
-        mUsersService = mRetrofit.create(UsersService.class);
-        mUsersAdapter = new BaseQuickAdapter<UserModel, BaseViewHolder>
-                (R.layout.layout_users_adapter, new ArrayList<>()) {
-            @Override
-            protected void convert(BaseViewHolder viewHolder, UserModel user) {
-                TextView txtId = viewHolder.getView(R.id.user_id);
-                TextView txtName = viewHolder.getView(R.id.user_name);
-                TextView txtLastName = viewHolder.getView(R.id.user_last_name);
-                TextView txtAge = viewHolder.getView(R.id.user_age);
-                TextView txtNumbers = viewHolder.getView(R.id.user_numbers);
-                txtId.setText("Id : " + user.getId());
-                txtName.setText("Name : " + user.getName());
-                txtLastName.setText("LastName : " + user.getLastName());
-                txtAge.setText("Age : " + user.getAge());
-                String numbers = "";
-                for (int i = 0; i < user.getPhoneNumbers().size(); i++)
-                    numbers += user.getPhoneNumbers().get(i) + (i < user.getPhoneNumbers().size() - 1 ? "\n" : "");
-                txtNumbers.setText("PhoneNumbers : " + numbers);
-            }
-        };
-        mUsersService.getUsers(1)
+    }
+
+    private void requestUsers() {
+        Disposable subscription = usersService.getUsers(1)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .retry(3)
-                .subscribe(userModels -> mUsersAdapter.addData(userModels),
-                        throwable -> throwable.printStackTrace());
-
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this,
-                LinearLayoutManager.VERTICAL, false));
-        mRecyclerView.setAdapter(mUsersAdapter);
+                .subscribe(userModels -> usersAdapter.addData(userModels),
+                        Throwable::printStackTrace);
+        compositeDisposable.add(subscription);
     }
 }
