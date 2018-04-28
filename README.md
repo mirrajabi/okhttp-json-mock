@@ -4,6 +4,10 @@
 
 This simple library helps you mock your data for using with okhttp+retrofit in json format in just a few moves.
 it forwards the requests to local json files and returns the data stored in them.
+
+## Version 2.0 Notes:
+Since version `2.0` the dependency to android platform is removed so it will be useful for all your jvm-based projects, not just android. You can still use version `1.1.1` if you don't care.
+
 ### Usage
 First add jitpack to your projects build.gradle file
 ```groovy
@@ -17,11 +21,35 @@ allprojects {
 Then add the dependency in modules build.gradle file
 ```groovy
 dependencies {
-    compile 'com.github.mirrajabi:okhttp-json-mock:1.1.1'
+    compile 'com.github.mirrajabi:okhttp-json-mock:2.0'
  }
 ```
+**Since version 2.0**:
+1. Construct your custom [InputStreamProvider](https://github.com/mirrajabi/okhttp-json-mock/blob/master/okhttpjsonmock/src/main/java/ir/mirrajabi/okhttpjsonmock/providers/InputStreamProvider.java):
 
-#### 1. Add OkhttpMockInterceptor to your OkhttpClient instance and attach it to yout retrofit instance
+```java
+InputStreamProvider inputStreamProvider = new InputStreamProvider() {
+    @Override
+    public InputStream provide(String path) {
+        try {
+            return getAssets().open(path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+};
+```
+
+2. Use the `InputStreamProvider` to construct the `OkHttpMockInterceptor` and client:
+```java
+OkHttpClient client = new OkHttpClient.Builder()
+    .addInterceptor(new OkHttpMockInterceptor(getAndroidProvider(), 5))
+    .build();
+```
+
+**For version 1.+**
+#### 1. Add OkhttpMockInterceptor to your OkhttpClient instance and attach it to your retrofit instance
 ```java
 OkHttpClient mOkHttpClient = new OkHttpClient.Builder()
     .addInterceptor(new OkHttpMockInterceptor(this, 5))
@@ -34,19 +62,7 @@ mRetrofit = new Retrofit.Builder()
     .client(mOkHttpClient)
     .build();
 ```
-Constructors
-```java
-OkHttpMockInterceptor(Context context, int failurePercentage)
-OkHttpMockInterceptor(Context context,
-                      int failurePercentage,
-                      int minDelayMilliseconds,
-                      int maxDelayMilliseconds)
-OkHttpMockInterceptor(Context context,
-                      int failurePercentage,
-                      String basePath,
-                      int minDelayMilliseconds,
-                      int maxDelayMilliseconds)
-```
+
 #### 2. Prepare your api service interfaces for retrofit []()
 ```java
 //usage example /users/page=phoneNumbers.json
@@ -160,6 +176,8 @@ Any contributions are welcome.
 just fork it and submit your changes to your fork and then create a pull request
 
 ### Changelog
+
+2.0 - `The library no longer depends on android classes`
 
 1.1.1 - `Fixes file name lowercase issue`
 
