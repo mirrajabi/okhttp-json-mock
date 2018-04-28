@@ -1,4 +1,4 @@
-package ir.mirrajabi.okhttpjsonmock;
+package ir.mirrajabi.okhttpjsonmock.providers;
 
 import java.io.File;
 import java.io.FileInputStream;

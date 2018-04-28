@@ -1,5 +1,7 @@
 apply plugin: 'java-library'
+apply plugin: 'maven'
 group = 'com.github.mirrajabi'
+version = '2.0'
 
 
 dependencies {

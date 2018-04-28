@@ -1,4 +1,4 @@
-package ir.mirrajabi.okhttpjsonmock.interceptors;
+package ir.mirrajabi.okhttpjsonmock;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -10,9 +10,10 @@ import com.google.gson.internal.LinkedTreeMap;
 import java.io.IOException;
 import java.util.Random;
 
-import ir.mirrajabi.okhttpjsonmock.InputStreamProvider;
 import ir.mirrajabi.okhttpjsonmock.helpers.ResourcesHelper;
 import ir.mirrajabi.okhttpjsonmock.models.MockedResponse;
+import ir.mirrajabi.okhttpjsonmock.providers.DefaultInputStreamProvider;
+import ir.mirrajabi.okhttpjsonmock.providers.InputStreamProvider;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
@@ -25,31 +26,42 @@ public class OkHttpMockInterceptor implements Interceptor {
     private final static int DELAY_DEFAULT_MIN = 500;
     private final static int DELAY_DEFAULT_MAX = 1500;
 
-    private int mFailurePercentage;
-    private String mBasePath;
-    private InputStreamProvider mInputStreamProvider;
-    private int mMinDelayMilliseconds;
-    private int mMaxDelayMilliseconds;
+    private int failurePercentage;
+    private String basePath;
+    private InputStreamProvider inputStreamProvider;
+    private int minDelayMilliseconds;
+    private int maxDelayMilliseconds;
+
+    public OkHttpMockInterceptor(int failurePercentage) {
+        this(new DefaultInputStreamProvider(), failurePercentage, DEFAULT_BASE_PATH,
+                DELAY_DEFAULT_MIN, DELAY_DEFAULT_MAX);
+    }
 
     public OkHttpMockInterceptor(InputStreamProvider inputStreamProvider, int failurePercentage) {
         this(inputStreamProvider, failurePercentage, DEFAULT_BASE_PATH,
                 DELAY_DEFAULT_MIN, DELAY_DEFAULT_MAX);
     }
 
-    public OkHttpMockInterceptor(InputStreamProvider inputStreamProvider, int failurePercentage,
-                                 int minDelayMilliseconds, int maxDelayMilliseconds) {
+    public OkHttpMockInterceptor(
+            InputStreamProvider inputStreamProvider,
+            int failurePercentage,
+            int minDelayMilliseconds,
+            int maxDelayMilliseconds) {
         this(inputStreamProvider, failurePercentage, DEFAULT_BASE_PATH,
                 minDelayMilliseconds, maxDelayMilliseconds);
     }
 
-    // TODO remove base path as it is no longer needed
-    public OkHttpMockInterceptor(InputStreamProvider inputStreamProvider, int failurePercentage, String basePath,
-                                 int minDelayMilliseconds, int maxDelayMilliseconds) {
-        mInputStreamProvider = inputStreamProvider;
-        mFailurePercentage = failurePercentage;
-        mBasePath = basePath;
-        mMinDelayMilliseconds = minDelayMilliseconds;
-        mMaxDelayMilliseconds = maxDelayMilliseconds;
+    public OkHttpMockInterceptor(
+            InputStreamProvider inputStreamProvider,
+            int failurePercentage,
+            String basePath,
+            int minDelayMilliseconds,
+            int maxDelayMilliseconds) {
+        this.inputStreamProvider = inputStreamProvider;
+        this.failurePercentage = failurePercentage;
+        this.basePath = basePath;
+        this.minDelayMilliseconds = minDelayMilliseconds;
+        this.maxDelayMilliseconds = maxDelayMilliseconds;
     }
 
     @Override
@@ -61,11 +73,11 @@ public class OkHttpMockInterceptor implements Interceptor {
         if (!query.equals(""))
             sym = "/";
         String path = url.encodedPath() + sym + query;
-        String responseString = ResourcesHelper.loadFileAsString(mInputStreamProvider,
-                mBasePath + path.substring(1) + ".json");
+        String responseString = ResourcesHelper.loadFileAsString(inputStreamProvider,
+                basePath + path.substring(1) + ".json");
         if (responseString == null)
-            responseString = ResourcesHelper.loadFileAsString(mInputStreamProvider,
-                    mBasePath + url.encodedPath().substring(1) + ".json");
+            responseString = ResourcesHelper.loadFileAsString(inputStreamProvider,
+                    basePath + url.encodedPath().substring(1) + ".json");
         MockedResponse mockedResponse = new MockedResponse()
                 .setResponse(new LinkedTreeMap())
                 .setStatusCode(404);
@@ -84,12 +96,12 @@ public class OkHttpMockInterceptor implements Interceptor {
             result = gson.toJson(items);
         try {
             Thread.sleep(Math.abs(new Random()
-                    .nextInt() % (mMaxDelayMilliseconds - mMinDelayMilliseconds))
-                    + mMinDelayMilliseconds);
+                    .nextInt() % (maxDelayMilliseconds - minDelayMilliseconds))
+                    + minDelayMilliseconds);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        boolean failure = Math.abs(new Random().nextInt() % 100) < mFailurePercentage;
+        boolean failure = Math.abs(new Random().nextInt() % 100) < failurePercentage;
         int statusCode = failure ? 504 : mockedResponse.getStatusCode(); /*504 or 408*/
         if (failure)
             System.out.print("JsonMockServer: Returning result from " +
@@ -109,38 +121,38 @@ public class OkHttpMockInterceptor implements Interceptor {
     }
 
     public int getFailurePercentage() {
-        return mFailurePercentage;
+        return failurePercentage;
     }
 
     public OkHttpMockInterceptor setFailurePercentage(int failurePercentage) {
-        mFailurePercentage = failurePercentage;
+        this.failurePercentage = failurePercentage;
         return this;
     }
 
     public String getBasePath() {
-        return mBasePath;
+        return basePath;
     }
 
     public OkHttpMockInterceptor setBasePath(String basePath) {
-        mBasePath = basePath;
+        this.basePath = basePath;
         return this;
     }
 
     public int getMinDelayMilliseconds() {
-        return mMinDelayMilliseconds;
+        return minDelayMilliseconds;
     }
 
     public OkHttpMockInterceptor setMinDelayMilliseconds(int minDelayMilliseconds) {
-        mMinDelayMilliseconds = minDelayMilliseconds;
+        this.minDelayMilliseconds = minDelayMilliseconds;
         return this;
     }
 
     public int getMaxDelayMilliseconds() {
-        return mMaxDelayMilliseconds;
+        return maxDelayMilliseconds;
     }
 
     public OkHttpMockInterceptor setMaxDelayMilliseconds(int maxDelayMilliseconds) {
-        mMaxDelayMilliseconds = maxDelayMilliseconds;
+        this.maxDelayMilliseconds = maxDelayMilliseconds;
         return this;
     }
 }

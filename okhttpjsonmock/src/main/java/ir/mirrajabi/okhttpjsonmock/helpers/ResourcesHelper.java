@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import ir.mirrajabi.okhttpjsonmock.InputStreamProvider;
+import ir.mirrajabi.okhttpjsonmock.providers.InputStreamProvider;
 
 public class ResourcesHelper {
     public static String loadFileAsString(InputStreamProvider inputStreamProvider, String name) {

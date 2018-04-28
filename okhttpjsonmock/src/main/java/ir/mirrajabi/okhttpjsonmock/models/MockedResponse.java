@@ -5,25 +5,25 @@ import com.google.gson.internal.LinkedTreeMap;
 
 public class MockedResponse {
     @SerializedName("status")
-    int mStatusCode;
+    int statusCode;
     @SerializedName("response")
-    LinkedTreeMap mResponse;
+    LinkedTreeMap response;
 
     public LinkedTreeMap getResponse() {
-        return mResponse;
+        return response;
     }
 
     public MockedResponse setResponse(LinkedTreeMap response) {
-        mResponse = response;
+        this.response = response;
         return this;
     }
 
     public int getStatusCode() {
-        return mStatusCode;
+        return statusCode;
     }
 
     public MockedResponse setStatusCode(int statusCode) {
-        mStatusCode = statusCode;
+        this.statusCode = statusCode;
         return this;
     }
 }
