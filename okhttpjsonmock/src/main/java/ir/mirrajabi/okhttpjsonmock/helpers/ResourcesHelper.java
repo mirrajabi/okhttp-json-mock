@@ -1,39 +1,41 @@
 package ir.mirrajabi.okhttpjsonmock.helpers;
 
-import android.content.Context;
-import android.util.Log;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import ir.mirrajabi.okhttpjsonmock.InputStreamProvider;
+
 public class ResourcesHelper {
-    public static String loadAssetTextAsString(Context context, String name) {
-        BufferedReader in = null;
+    public static String loadFileAsString(InputStreamProvider inputStreamProvider, String name) {
+        BufferedReader bufferedReader = null;
         try {
-            StringBuilder buf = new StringBuilder();
-            InputStream is = context.getAssets().open(name);
-            in = new BufferedReader(new InputStreamReader(is));
+            StringBuilder stringBuilder = new StringBuilder();
+            InputStream inputStream = inputStreamProvider.provide(name);
+            if(inputStream == null) {
+                return null;
+            }
+            bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 
             String str;
             boolean isFirst = true;
-            while ((str = in.readLine()) != null) {
+            while ((str = bufferedReader.readLine()) != null) {
                 if (isFirst)
                     isFirst = false;
                 else
-                    buf.append('\n');
-                buf.append(str);
+                    stringBuilder.append('\n');
+                stringBuilder.append(str);
             }
-            return buf.toString();
+            return stringBuilder.toString();
         } catch (IOException e) {
-            Log.e(context.getPackageName(), "Error opening asset " + name);
+            System.out.print("JsonMockServer: Error opening asset " + name);
         } finally {
-            if (in != null) {
+            if (bufferedReader != null) {
                 try {
-                    in.close();
+                    bufferedReader.close();
                 } catch (IOException e) {
-                    Log.e(context.getPackageName(), "Error closing asset " + name);
+                    System.out.print("JsonMockServer: Error closing asset " + name);
                 }
             }
         }

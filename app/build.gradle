@@ -37,5 +37,5 @@ dependencies {
     implementation 'com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0'
     implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
-    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.7.0'
+    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.38'
 }

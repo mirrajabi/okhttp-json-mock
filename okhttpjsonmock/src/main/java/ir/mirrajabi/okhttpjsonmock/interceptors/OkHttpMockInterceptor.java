@@ -1,8 +1,5 @@
 package ir.mirrajabi.okhttpjsonmock.interceptors;
 
-import android.content.Context;
-import android.util.Log;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -13,6 +10,7 @@ import com.google.gson.internal.LinkedTreeMap;
 import java.io.IOException;
 import java.util.Random;
 
+import ir.mirrajabi.okhttpjsonmock.InputStreamProvider;
 import ir.mirrajabi.okhttpjsonmock.helpers.ResourcesHelper;
 import ir.mirrajabi.okhttpjsonmock.models.MockedResponse;
 import okhttp3.HttpUrl;
@@ -23,29 +21,31 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 public class OkHttpMockInterceptor implements Interceptor {
-    public final static String DEFAULT_BASE_PATH = "";
-    public final static int DELAY_DEFAULT_MIN = 500;
-    public final static int DELAY_DEFAULT_MAX = 1500;
-    private Context mContext;
+    private final static String DEFAULT_BASE_PATH = "";
+    private final static int DELAY_DEFAULT_MIN = 500;
+    private final static int DELAY_DEFAULT_MAX = 1500;
+
     private int mFailurePercentage;
     private String mBasePath;
+    private InputStreamProvider mInputStreamProvider;
     private int mMinDelayMilliseconds;
     private int mMaxDelayMilliseconds;
 
-    public OkHttpMockInterceptor(Context context, int failurePercentage) {
-        this(context, failurePercentage, DEFAULT_BASE_PATH,
+    public OkHttpMockInterceptor(InputStreamProvider inputStreamProvider, int failurePercentage) {
+        this(inputStreamProvider, failurePercentage, DEFAULT_BASE_PATH,
                 DELAY_DEFAULT_MIN, DELAY_DEFAULT_MAX);
     }
 
-    public OkHttpMockInterceptor(Context context, int failurePercentage,
+    public OkHttpMockInterceptor(InputStreamProvider inputStreamProvider, int failurePercentage,
                                  int minDelayMilliseconds, int maxDelayMilliseconds) {
-        this(context, failurePercentage, DEFAULT_BASE_PATH,
+        this(inputStreamProvider, failurePercentage, DEFAULT_BASE_PATH,
                 minDelayMilliseconds, maxDelayMilliseconds);
     }
 
-    public OkHttpMockInterceptor(Context context, int failurePercentage, String basePath,
+    // TODO remove base path as it is no longer needed
+    public OkHttpMockInterceptor(InputStreamProvider inputStreamProvider, int failurePercentage, String basePath,
                                  int minDelayMilliseconds, int maxDelayMilliseconds) {
-        mContext = context;
+        mInputStreamProvider = inputStreamProvider;
         mFailurePercentage = failurePercentage;
         mBasePath = basePath;
         mMinDelayMilliseconds = minDelayMilliseconds;
@@ -61,10 +61,10 @@ public class OkHttpMockInterceptor implements Interceptor {
         if (!query.equals(""))
             sym = "/";
         String path = url.encodedPath() + sym + query;
-        String responseString = ResourcesHelper.loadAssetTextAsString(mContext,
+        String responseString = ResourcesHelper.loadFileAsString(mInputStreamProvider,
                 mBasePath + path.substring(1) + ".json");
         if (responseString == null)
-            responseString = ResourcesHelper.loadAssetTextAsString(mContext,
+            responseString = ResourcesHelper.loadFileAsString(mInputStreamProvider,
                     mBasePath + url.encodedPath().substring(1) + ".json");
         MockedResponse mockedResponse = new MockedResponse()
                 .setResponse(new LinkedTreeMap())
@@ -92,10 +92,10 @@ public class OkHttpMockInterceptor implements Interceptor {
         boolean failure = Math.abs(new Random().nextInt() % 100) < mFailurePercentage;
         int statusCode = failure ? 504 : mockedResponse.getStatusCode(); /*504 or 408*/
         if (failure)
-            Log.e("JsonMockServer", "Returning result from " +
+            System.out.print("JsonMockServer: Returning result from " +
                     path + "\t\tStatusCode : " + statusCode);
         else
-            Log.v("JsonMockServer", "Returning result from " +
+            System.out.print("JsonMockServer: Returning result from " +
                     path + "\t\tStatusCode : " + statusCode);
 
         return new Response.Builder()

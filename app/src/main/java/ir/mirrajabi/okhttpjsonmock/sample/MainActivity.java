@@ -10,12 +10,14 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import ir.mirrajabi.okhttpjsonmock.InputStreamProvider;
 import ir.mirrajabi.okhttpjsonmock.interceptors.OkHttpMockInterceptor;
 import ir.mirrajabi.okhttpjsonmock.sample.models.UserModel;
 import ir.mirrajabi.okhttpjsonmock.sample.services.UsersService;
@@ -42,8 +44,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initializeComponents() {
+        InputStreamProvider androidInputStreamProvider = path -> {
+            try {
+                return getAssets().open(path);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        };
         mOkHttpClient = new OkHttpClient.Builder()
-                .addInterceptor(new OkHttpMockInterceptor(this, 5))
+                .addInterceptor(new OkHttpMockInterceptor(androidInputStreamProvider, 5))
                 .build();
         mRetrofit = new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create())
