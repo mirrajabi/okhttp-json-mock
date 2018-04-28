@@ -5,21 +5,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
-import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.chad.library.adapter.base.BaseViewHolder;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 import java.io.IOException;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import ir.mirrajabi.okhttpjsonmock.OkHttpMockInterceptor;
 import ir.mirrajabi.okhttpjsonmock.providers.InputStreamProvider;
-import ir.mirrajabi.okhttpjsonmock.sample.models.UserModel;
 import ir.mirrajabi.okhttpjsonmock.sample.services.UsersService;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
@@ -28,10 +23,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity {
     private static final String BASE_URL = "http://example.com";
 
-    @BindView(R.id.recyclerview)
     RecyclerView recyclerView;
 
-    private BaseQuickAdapter<UserModel, BaseViewHolder> usersAdapter = new UsersAdapter();
+    private UsersAdapter usersAdapter;
     private UsersService usersService;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
@@ -40,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ButterKnife.bind(this);
         initializeComponents();
 
         requestUsers();
@@ -56,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
     private void initializeComponents() {
         usersService = constructService();
 
+        usersAdapter = new UsersAdapter(this);
+        recyclerView = findViewById(R.id.recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this,
                 LinearLayoutManager.VERTICAL, false));
         recyclerView.setAdapter(usersAdapter);
