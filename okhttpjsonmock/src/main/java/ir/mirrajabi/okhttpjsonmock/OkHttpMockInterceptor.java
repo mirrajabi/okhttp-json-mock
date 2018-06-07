@@ -1,17 +1,9 @@
 package ir.mirrajabi.okhttpjsonmock;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.internal.LinkedTreeMap;
-
 import java.io.IOException;
 import java.util.Random;
 
 import ir.mirrajabi.okhttpjsonmock.helpers.ResourcesHelper;
-import ir.mirrajabi.okhttpjsonmock.models.MockedResponse;
 import ir.mirrajabi.okhttpjsonmock.providers.DefaultInputStreamProvider;
 import ir.mirrajabi.okhttpjsonmock.providers.InputStreamProvider;
 import okhttp3.HttpUrl;
@@ -66,7 +58,6 @@ public class OkHttpMockInterceptor implements Interceptor {
 
     @Override
     public Response intercept(Chain chain) throws IOException {
-        Gson gson = new GsonBuilder().setLenient().create();
         HttpUrl url = chain.request().url();
         String sym = "";
         String query = url.encodedQuery() == null ? "" : url.encodedQuery();
@@ -78,22 +69,7 @@ public class OkHttpMockInterceptor implements Interceptor {
         if (responseString == null)
             responseString = ResourcesHelper.loadFileAsString(inputStreamProvider,
                     basePath + url.encodedPath().substring(1) + ".json");
-        MockedResponse mockedResponse = new MockedResponse()
-                .setResponse(new LinkedTreeMap())
-                .setStatusCode(404);
-        if (responseString != null) {
-            try {
-                mockedResponse = gson.fromJson(responseString, MockedResponse.class);
-            } catch (JsonSyntaxException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-        JsonObject jsonObject = gson.toJsonTree(mockedResponse.getResponse()).getAsJsonObject();
-        String result = jsonObject.toString();
-        JsonArray items = jsonObject.getAsJsonArray("items");
-        if (items != null)
-            result = gson.toJson(items);
+        String result = responseString != null ? responseString : "";
         try {
             Thread.sleep(Math.abs(new Random()
                     .nextInt() % (maxDelayMilliseconds - minDelayMilliseconds))
@@ -102,7 +78,7 @@ public class OkHttpMockInterceptor implements Interceptor {
             e.printStackTrace();
         }
         boolean failure = Math.abs(new Random().nextInt() % 100) < failurePercentage;
-        int statusCode = failure ? 504 : mockedResponse.getStatusCode(); /*504 or 408*/
+        int statusCode = failure ? 504 : 200;
         if (failure)
             System.out.print("JsonMockServer: Returning result from " +
                     path + "\t\tStatusCode : " + statusCode);

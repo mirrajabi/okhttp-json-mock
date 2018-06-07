@@ -1,14 +1,11 @@
 {
-  "status": 200,
-  "response": {
-    "id": 0,
-    "name": "John",
-    "lastName": "Doe",
-    "age": 20,
-    "phoneNumbers": [
-      "0123456789",
-      "3215467891",
-      "1645189442"
-    ]
-  }
+  "id": 0,
+  "name": "John",
+  "lastName": "Doe",
+  "age": 20,
+  "phoneNumbers": [
+    "0123456789",
+    "3215467891",
+    "1645189442"
+  ]
 }
