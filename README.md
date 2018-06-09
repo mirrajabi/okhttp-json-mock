@@ -14,7 +14,7 @@ Since version `2.0` the dependency to android platform is removed so it will be 
 
 ### Usage
 First add jitpack to your projects build.gradle file
-```groovy
+```gradle
 allprojects {
    	repositories {
    		...
@@ -23,7 +23,7 @@ allprojects {
 }
 ```
 Then add the dependency in modules build.gradle file
-```groovy
+```gradle
 dependencies {
     compile 'com.github.mirrajabi:okhttp-json-mock:3.0'
  }
