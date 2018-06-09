@@ -1,10 +1,7 @@
 {
-  "status": 200,
-  "response": {
-    "id": 2,
-    "name": "Jack",
-    "lastName": "Dane",
-    "age": 25,
-    "phoneNumbers": []
-  }
+  "id": 2,
+  "name": "Jack",
+  "lastName": "Dane",
+  "age": 25,
+  "phoneNumbers": []
 }
