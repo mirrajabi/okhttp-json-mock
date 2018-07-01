@@ -1,6 +1,5 @@
 package ir.mirrajabi.okhttpjsonmock;
 
-import java.io.IOException;
 import java.util.Random;
 
 import ir.mirrajabi.okhttpjsonmock.helpers.ResourcesHelper;
@@ -57,18 +56,20 @@ public class OkHttpMockInterceptor implements Interceptor {
     }
 
     @Override
-    public Response intercept(Chain chain) throws IOException {
+    public Response intercept(Chain chain) {
         HttpUrl url = chain.request().url();
         String sym = "";
         String query = url.encodedQuery() == null ? "" : url.encodedQuery();
-        if (!query.equals(""))
+        if (!query.equals("")) {
             sym = "/";
+        }
         String path = url.encodedPath() + sym + query;
         String responseString = ResourcesHelper.loadFileAsString(inputStreamProvider,
                 basePath + path.substring(1) + ".json");
-        if (responseString == null)
+        if (responseString == null) {
             responseString = ResourcesHelper.loadFileAsString(inputStreamProvider,
                     basePath + url.encodedPath().substring(1) + ".json");
+        }
         String result = responseString != null ? responseString : "";
         try {
             Thread.sleep(Math.abs(new Random()
@@ -79,12 +80,14 @@ public class OkHttpMockInterceptor implements Interceptor {
         }
         boolean failure = Math.abs(new Random().nextInt() % 100) < failurePercentage;
         int statusCode = failure ? 504 : 200;
-        if (failure)
+        if (failure) {
             System.out.print("JsonMockServer: Returning result from " +
                     path + "\t\tStatusCode : " + statusCode);
-        else
+        }
+        else {
             System.out.print("JsonMockServer: Returning result from " +
                     path + "\t\tStatusCode : " + statusCode);
+        }
 
         return new Response.Builder()
                 .code(statusCode)
